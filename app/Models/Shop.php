@@ -9,6 +9,8 @@ class Shop extends Model
 
     //DONE Relationships ----------------------------------------------------------------
 
+    protected $guarded = ['id' , 'timestamp'];
+
     public function user(){
         return $this->belongsTo(User::class);
     }
