@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:Sanctum');
+
+
 Route::controller(UserController::class)->group(function () {
 
     Route::middleware(['auth:Sanctum'])->group(function () {
@@ -18,16 +20,30 @@ Route::controller(UserController::class)->group(function () {
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
-    
+
 });
 
-Route::get('getProducts' , [ProductController::class , 'getProducts']);
-Route::get('getProduct/{id}' , [ProductController::class , 'getProduct']);
-Route::post('storeProduct' , [ProductController::class , 'storeProduct']);
-Route::put('updateProduct/{id}' , [ProductController::class , 'updateProduct']);
-Route::delete('deleteProduct/{id}' , [ProductController::class , 'deleteProduct']);
+Route::controller(ProductController::class)->group(function () {
 
-Route::get('getShopProducts/{id}' , [ShopController::class , 'getShopProducts2']);
+    Route::middleware(['auth:Sanctum'])->group(function () {
+
+        Route::get('getProducts', 'getProducts');
+        Route::get('getProduct/{id}', 'getProduct');
+        Route::post('storeProduct', 'storeProduct');
+        Route::put('updateProduct/{id}', 'updateProduct');
+        Route::delete('deleteProduct/{id}', 'deleteProduct');
+    });
+
+});
+
+Route::controller(ShopController::class)->group(function () {
+
+    Route::middleware(['auth:Sanctum'])->group(function () {
+
+        Route::get('getShopProducts/{id}', [ShopController::class, 'getShopProducts2']);
+
+    });
+});
 
 
 
