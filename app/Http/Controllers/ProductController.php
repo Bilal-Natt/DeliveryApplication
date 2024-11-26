@@ -32,7 +32,7 @@ class ProductController extends Controller{
     public function storeProduct(Request $request){
         $validatedData = $request->validate(
             [
-                'name'=> 'required',
+                'name'=> 'required|string',
                 'price'=> 'required',
                 'quantity'=> 'required',
                 'shop_id'=> 'required',
@@ -45,7 +45,7 @@ class ProductController extends Controller{
     
     public function updateProduct(Request $request, $id){
         $validatedData = $request->validate([
-            'name'=> 'required',
+            'name'=> 'required|string',
                 'price'=> 'sometimes',
                 'quantity'=> 'sometimes',
                 'shop_id'=> 'required',
@@ -55,12 +55,12 @@ class ProductController extends Controller{
         return response()->json(['message'=> 'Product updated successfully'] ,200);
     }
 
-    public function deleteProduct($id){
+    public function deleteProduct($id , $number){
         $product = Product::findOrFail($id);
         if ($product->quantity === 1){
             $product->delete();
         }else{
-            $product->quantity--;
+            $product->quantity =$product->quantity - $number;
             $product->save();
         }
         return response()->json(['message'=> 'The quantity of the product has been updated'] ,200);

@@ -93,5 +93,24 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function setAddress(Request $request , $id){
+        $user = User::findOrFail($id);
+        $address = $request->validate([
+            'address' => 'required|url|max:255']);
+        
+        $user->update($address);
+        return response()->json(['message' =>'Address stored successfully'] , 200);
+
+    }
+
+    public function setImage(Request $request , $id){
+        $user = User::findOrFail($id);
+        $image = $request->validate([
+            'image_path' => 'required|string|max:255']);
+        
+        $user->update($image);
+        return response()->json(['message' =>'Image stored successfully'] , 200);
+    }
+
     
 }

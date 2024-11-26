@@ -14,7 +14,4 @@ class ShopController extends Controller
         return response()->json($shopProducts->products , 200);
     }
 
-    
-
-
 }

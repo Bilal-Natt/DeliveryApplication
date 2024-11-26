@@ -18,6 +18,9 @@ Route::controller(UserController::class)->group(function () {
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::post('setAddress/{id}', 'setAddress');
+    Route::post('setImage/{id}', 'setImage');
+
     
 });
 
@@ -25,7 +28,7 @@ Route::get('getProducts' , [ProductController::class , 'getProducts']);
 Route::get('getProduct/{id}' , [ProductController::class , 'getProduct']);
 Route::post('storeProduct' , [ProductController::class , 'storeProduct']);
 Route::put('updateProduct/{id}' , [ProductController::class , 'updateProduct']);
-Route::delete('deleteProduct/{id}' , [ProductController::class , 'deleteProduct']);
+Route::delete('deleteProduct/{id}/{number}' , [ProductController::class , 'deleteProduct']);
 
 Route::get('getShopProducts/{id}' , [ShopController::class , 'getShopProducts2']);
 
