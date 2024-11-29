@@ -20,24 +20,10 @@ Route::controller(UserController::class)->group(function () {
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
-<<<<<<< HEAD
-    Route::post('setAddress/{id}', 'setAddress');
-    Route::post('setImage/{id}', 'setImage');
-
-    
 });
 
-Route::get('getProducts' , [ProductController::class , 'getProducts']);
-Route::get('getProduct/{id}' , [ProductController::class , 'getProduct']);
-Route::post('storeProduct' , [ProductController::class , 'storeProduct']);
-Route::put('updateProduct/{id}' , [ProductController::class , 'updateProduct']);
-Route::delete('deleteProduct/{id}/{number}' , [ProductController::class , 'deleteProduct']);
-=======
-
-});
 
 Route::controller(ProductController::class)->group(function () {
->>>>>>> e050dd854822e6e400c536dc1bd078f778cc7215
 
     Route::middleware(['auth:Sanctum'])->group(function () {
 
@@ -46,6 +32,9 @@ Route::controller(ProductController::class)->group(function () {
         Route::post('storeProduct', 'storeProduct');
         Route::put('updateProduct/{id}', 'updateProduct');
         Route::delete('deleteProduct/{id}', 'deleteProduct');
+        Route::post('setAddress/{id}', 'setAddress');
+        Route::post('setImage/{id}', 'setImage');
+
     });
 
 });
