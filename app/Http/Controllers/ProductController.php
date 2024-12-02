@@ -19,9 +19,9 @@ class ProductController extends Controller
         return response()->json($products->select('name', 'price', 'quantity', 'shop'), 200);
     }
 
-    public function getProduct($id)
+    public function getProduct(Request $request)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::findOrFail($request->id);
         $shop = Shop::where('id', $product->shop_id)->first('name');
         $product->shop = $shop->name;
         return response()->json([

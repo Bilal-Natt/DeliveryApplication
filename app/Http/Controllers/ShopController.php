@@ -14,4 +14,9 @@ class ShopController extends Controller
         return response()->json($shopProducts->products , 200);
     }
 
+    public function getShop($id){
+        $shop = Shop::findOrFail($id);
+        return $shop;
+    }
+
 }

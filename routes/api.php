@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
@@ -48,6 +49,11 @@ Route::controller(ShopController::class)->group(function () {
 
     });
 });
+
+Route::get('getPurchasedOrders' , [OrderController::class, 'getPurchasedOrders']);
+Route::get('getOrderProducts/{id}' , [OrderController::class, 'getOrderProducts']);
+Route::get('setTotal/{id}' , [OrderController::class, 'setTotal']);
+
 
 
 
