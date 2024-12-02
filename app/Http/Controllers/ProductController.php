@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use function Laravel\Prompts\select;
 
 class ProductController extends Controller
 {
@@ -80,8 +81,19 @@ class ProductController extends Controller
 
     public function searchProduct(Request $request)
     {
-        $products = Product::where('name', 'LIKE', $request->text . '%');
-        return response()->json($products->select('name', 'price', 'quantity', 'shop_id')->get(), 200);
-    }
+        $products = Product::with('shop')
+            ->where('name', 'LIKE', $request->text . '%')
+            ->select('name','price','quantity','shop_id')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'quantity' => $product->quantity,
+                    'shop' => $product->shop->name
+                ];
+            });
 
+        return response()->json($products, 200);
+    }
 }

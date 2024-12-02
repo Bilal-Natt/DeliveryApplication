@@ -34,9 +34,9 @@ Route::controller(ProductController::class)->group(function () {
         Route::delete('deleteProduct/{id}', 'deleteProduct');
         Route::post('setAddress/{id}', 'setAddress');
         Route::post('setImage/{id}', 'setImage');
-        Route::get('products/search', 'searchProduct');
 
     });
+    Route::get('products/search', 'searchProduct');
 
 });
 
