@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use function Laravel\Prompts\select;
 
 class ProductController extends Controller
 {
@@ -75,14 +76,24 @@ class ProductController extends Controller
 
     /**
      * This function uses to get all the products that begin with the specified prefix text,
-     * this text have to send with the request as a body parameter
+     * this text has to send with the request as a body parameter {text}
      */
 
     public function searchProduct(Request $request)
     {
-        $products = Product::where('name', 'LIKE', $request->text . '%');
+        $products = Product::with('shop')
+            ->where('name', 'LIKE', $request->text . '%')
+            ->select('name','price','quantity','shop_id')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'quantity' => $product->quantity,
+                    'shop' => $product->shop->name
+                ];
+            });
 
-        return response()->json($products->select('name', 'price', 'quantity', 'shop_id')->get(), 200);
+        return response()->json($products, 200);
     }
-
 }

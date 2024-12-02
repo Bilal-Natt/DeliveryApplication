@@ -46,8 +46,10 @@ Route::controller(ShopController::class)->group(function () {
     Route::middleware(['auth:Sanctum'])->group(function () {
 
         Route::get('getShopProducts/{id}', [ShopController::class, 'getShopProducts2']);
+        Route::get('shop/products/search', 'searchShopProducts');
 
     });
+    Route::get('shops/search', 'searchShop');
 });
 
 Route::get('getPurchasedOrders' , [OrderController::class, 'getPurchasedOrders']);
