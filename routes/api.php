@@ -36,6 +36,7 @@ Route::controller(ProductController::class)->group(function () {
         Route::post('setImage/{id}', 'setImage');
 
     });
+    Route::get('products/search', 'searchProduct');
 
 });
 

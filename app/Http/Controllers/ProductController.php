@@ -63,7 +63,7 @@ class ProductController extends Controller
     public function deleteProduct($id, $number)
     {
         $product = Product::findOrFail($id);
-        if ($product->quantity === $number) {
+        if ($product->quantity == $number) {
             $product->delete();
         } else {
             $product->quantity = $product->quantity - $number;
@@ -72,5 +72,17 @@ class ProductController extends Controller
         return response()->json(['message' => 'The quantity of the product has been updated'], 200);
     }
 
+
+    /**
+     * This function uses to get all the products that begin with the specified prefix text,
+     * this text have to send with the request as a body parameter
+     */
+
+    public function searchProduct(Request $request)
+    {
+        $products = Product::where('name', 'LIKE', $request->text . '%');
+
+        return response()->json($products->select('name', 'price', 'quantity', 'shop_id')->get(), 200);
+    }
 
 }
