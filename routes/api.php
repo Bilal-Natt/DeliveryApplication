@@ -34,9 +34,9 @@ Route::controller(ProductController::class)->group(function () {
         Route::delete('deleteProduct/{id}', 'deleteProduct');
         Route::post('setAddress/{id}', 'setAddress');
         Route::post('setImage/{id}', 'setImage');
+        Route::get('products/search', 'searchProduct');
 
     });
-    Route::get('products/search', 'searchProduct');
 
 });
 
@@ -45,8 +45,10 @@ Route::controller(ShopController::class)->group(function () {
     Route::middleware(['auth:Sanctum'])->group(function () {
 
         Route::get('getShopProducts/{id}', [ShopController::class, 'getShopProducts2']);
+        Route::get('shop/products/search', 'searchShopProducts');
 
     });
+    Route::get('shops/search', 'searchShop');
 });
 
 
