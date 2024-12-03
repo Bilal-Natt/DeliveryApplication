@@ -17,7 +17,6 @@ Route::controller(UserController::class)->group(function () {
     Route::middleware(['auth:Sanctum'])->group(function () {
 
         Route::post('logout', 'logout');
-
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
@@ -34,10 +33,8 @@ Route::controller(ProductController::class)->group(function () {
         Route::post('storeProduct', 'storeProduct');
         Route::put('updateProduct/{id}', 'updateProduct');
         Route::delete('deleteProduct/{id}', 'deleteProduct');
-
     });
     Route::get('products/search', 'searchProduct');
-
 });
 
 Route::controller(ShopController::class)->group(function () {
@@ -47,30 +44,19 @@ Route::controller(ShopController::class)->group(function () {
         Route::get('getShopProducts/{id}', 'getShopProducts2');
         Route::get('shop/products/search', 'searchShopProducts');
         Route::get('shops/search', 'searchShop');
-
     });
 });
 
 Route::controller(OrderController::class)->group(function () {
 
-    Route::get('getPurchasedOrders' , 'getPurchasedOrders');
-    Route::get('getOrderProducts' , 'getOrderProducts');
-
+    Route::get('getPurchasedOrders', 'getPurchasedOrders');
+    Route::get('getOrderProducts', 'getOrderProducts');
 });
 
 
-    Route::middleware(['auth:Sanctum'])->group(function () {
+Route::middleware(['auth:Sanctum'])->group(function () {
 
-        Route::get('getPurchasedOrders' ,  'getPurchasedOrders');
-        Route::get('getOrderProducts/{id}' ,  'getOrderProducts');
-
-    });
-
-Route::get('setTotal/{id}' , [OrderController::class, 'setTotal']);
-
-
-
-
-
-
+    Route::get('getPurchasedOrders',  'getPurchasedOrders');
+    Route::get('getOrderProducts/{id}',  'getOrderProducts');
+});
 
