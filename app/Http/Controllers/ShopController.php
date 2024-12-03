@@ -12,17 +12,10 @@ class ShopController extends Controller
     /**
      * This function returns all of the products that belongs to a certain shop by its id 
      * */
+
     public function getShopProducts($id){
         $shopProducts = Shop::findOrFail($id);
         return response()->json($shopProducts->products , 200);
-    }
-
-    /**
-     * This function returns the shop by its id 
-     * */
-    public function getShop($id){
-        $shop = Shop::findOrFail($id);
-        return $shop;
     }
 
     /**
@@ -30,7 +23,7 @@ class ShopController extends Controller
      * this text and shop have to send with the request as a body parameter {text,shop_id}
      * */
     public function searchShopProducts(Request $request){
-            $products = Product::where('name', 'LIKE', $request->text . '%')
+            $products =  $products = Product::where('name', 'LIKE', $request->text . '%')
                 ->where('shop_id',$request->shop_id)->get();
             return response()->json($products , 200);
     }

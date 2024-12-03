@@ -44,18 +44,29 @@ Route::controller(ShopController::class)->group(function () {
 
     Route::middleware(['auth:Sanctum'])->group(function () {
 
-        Route::get('getShopProducts/{id}', 'getShopProducts');
+        Route::get('getShopProducts/{id}', 'getShopProducts2');
         Route::get('shop/products/search', 'searchShopProducts');
+        Route::get('shops/search', 'searchShop');
 
     });
-    Route::get('shops/search', 'searchShop');
 });
 
 Route::controller(OrderController::class)->group(function () {
+
     Route::get('getPurchasedOrders' , 'getPurchasedOrders');
     Route::get('getOrderProducts' , 'getOrderProducts');
 
 });
+
+
+    Route::middleware(['auth:Sanctum'])->group(function () {
+
+        Route::get('getPurchasedOrders' ,  'getPurchasedOrders');
+        Route::get('getOrderProducts/{id}' ,  'getOrderProducts');
+
+    });
+
+Route::get('setTotal/{id}' , [OrderController::class, 'setTotal']);
 
 
 
