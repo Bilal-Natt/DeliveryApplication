@@ -93,23 +93,31 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function setAddress(Request $request){
+    /**
+     * this  function is to update the user profile
+     */
+    public function updateUser(Request $request)
+    {
         $user = User::findOrFail($request->id);
-        $address = $request->validate([
-            'address' => 'required|url|max:255']);
+        $validatedData = $request->validate([
+            'first_name' => 'sometimes|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'password' => [
+                'sometimes',
+                'string',
+                'min:8', // Minimum password length
+                'confirmed', // Password confirmation
+                'regex:/[a-z]/', // At least one lowercase letter
+                'regex:/[A-Z]/', // At least one uppercase letter
+                'regex:/[0-9]/', // At least one numeric digit
+                'regex:/[@$!%*?&]/'
+            ],
+            'address' => 'sometimes|url|max:255',
+            'image_path' => 'sometimes|string|max:255'
+        ]);
 
-        $user->update($address);
-        return response()->json(['message' =>'Address stored successfully'] , 200);
-
-    }
-
-    public function setImage(Request $request , $id){
-        $user = User::findOrFail($id);
-        $image = $request->validate([
-            'image_path' => 'required|string|max:255']);
-
-        $user->update($image);
-        return response()->json(['message' =>'Image stored successfully'] , 200);
+        $user->update($validatedData);
+        return response()->json(['message' => 'the info has been updated'], 200);
     }
 
 

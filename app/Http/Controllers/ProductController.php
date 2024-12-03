@@ -10,6 +10,9 @@ use function Laravel\Prompts\select;
 
 class ProductController extends Controller
 {
+    /** 
+     *This function returns All the products in the app
+    **/
     public function getProducts()
     {
         $products = Product::select('name', 'price', 'quantity', 'shop_id')->get();
@@ -21,6 +24,9 @@ class ProductController extends Controller
         return response()->json($products->select('name', 'price', 'quantity', 'shop'), 200);
     }
 
+    /** 
+     *This function return the informations of a certian product
+    **/
     public function getProduct(Request $request)
     {
         $product = Product::findOrFail($request->id);
@@ -34,6 +40,9 @@ class ProductController extends Controller
         ], 200);
     }
 
+     /** 
+     *This function stores a new product to the app
+    **/
     public function storeProduct(Request $request)
     {
         $validatedData = $request->validate(
@@ -49,6 +58,9 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product stored successfully'], 200);
     }
 
+    /** 
+     *This function updates an existing product to the app
+    **/
     public function updateProduct(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -62,6 +74,9 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product updated successfully'], 200);
     }
 
+    /** 
+     *This function updates the quantity of a product , and if the quantity becomes 0 , it deletes the product from the app
+    **/
     public function deleteProduct($id, $number)
     {
         $product = Product::findOrFail($id);
