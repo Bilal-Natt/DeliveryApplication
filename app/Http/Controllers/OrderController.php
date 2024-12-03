@@ -23,10 +23,6 @@ class OrderController extends Controller
         }
         foreach ($purchasedOrders as $key => $order) {
             $order->products =  $productsPerOrder[$key]->select('name', 'price', 'shop_id');
-            // $s = new shopController();
-            // foreach ($order->products as $product) {
-            // $product['shop_id'] = $s->getShop($product['shop_id'])->name;
-            // }
         }
         return response()->json($purchasedOrders, 200);
     }
