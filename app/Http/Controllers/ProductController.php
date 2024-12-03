@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Request;
@@ -96,4 +97,6 @@ class ProductController extends Controller
 
         return response()->json($products, 200);
     }
+
+    
 }

@@ -14,11 +14,12 @@ class ShopController extends Controller
         return response()->json($shopProducts->products , 200);
     }
 
-<<<<<<< HEAD
+
     public function getShop($id){
         $shop = Shop::findOrFail($id);
         return $shop;
-=======
+}
+
     /**
      * This function uses to get all the products that begin with the specified prefix text in specified shop,
      * this text and shop have to send with the request as a body parameter {text,shop_id}
@@ -37,7 +38,7 @@ class ShopController extends Controller
     {
         $shops = Shop::where('name', 'LIKE', $request->text . '%')->get();
         return response()->json($shops , 200);
->>>>>>> 4b7f287dd1cc28f9f9fad08eb95920ad2623961b
+
     }
 
 }

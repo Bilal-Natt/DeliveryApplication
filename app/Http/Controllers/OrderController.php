@@ -10,30 +10,19 @@ class OrderController extends Controller
 {
     public function getPurchasedOrders(Request $request)
     {
-        $orders = Order::where('user_id', $request->id)->get();
-        $purchasedOrders = [];
-        $productsPerOrder = [];
-        foreach ($orders as $order) {
-            $status = Status::where('id', $order->status_id)->get();
-            if ($status[0]['name'] == 'Purchased') {
-                $productsPerOrder[] = OrderController::getOrderProducts($order->id);
-
-                $purchasedOrders[] = $order;
-            }
-        }
-        foreach ($purchasedOrders as $key => $order) {
-            $order->products =  $productsPerOrder[$key]->select('name', 'price', 'shop_id');
-            // $s = new shopController();
-            // foreach ($order->products as $product) {
-            // $product['shop_id'] = $s->getShop($product['shop_id'])->name;
-            // }
-        }
-        return response()->json($purchasedOrders, 200);
+        $orders = Order::where('user_id', $request->user_id)->where('status_id',1)->select('id' , 'total' , 'shipping_cost')->get();
+        return response()->json($orders, 200);
     }
 
     public function getOrderProducts($id)
     {
-        $products = Order::findOrFail($id)->products;
+        $products = Order::findOrFail($id)->products->map(function($product){
+            return [
+                 'name' => $product->name,
+                 'price'=> $product->price,
+                 'quantity'=> $product->pivot->quantity
+             ];
+        });
         return $products;
     }
 
@@ -41,9 +30,9 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
         $total = 0;
-        $products = OrderController::getOrderProducts($order->id);
+        $products = $this->getOrderProducts($order->id);
         foreach ($products as $product) {
-            $total += $product->price * $product->pivot->quantity;
+            $total += $product['price']* $product['quantity'];
         }
         $order->update(['total' => $total]);
     }
