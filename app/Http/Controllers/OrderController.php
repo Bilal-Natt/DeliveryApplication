@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Shop;
 use App\Models\Status;
 use Illuminate\Database\Eloquent\Casts\Json;
@@ -10,6 +11,52 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+    /**
+     * This function is used to store a new order and update the quantities of the products associated with that order.
+     * The request body must include the following parameters:
+     *
+     * user_id: The ID of the user placing the order.
+     * products: An array of objects, where each object contains:
+     * product_id: The ID of the product being ordered.
+     * quantity: The quantity of that product.
+     */
+    public function storeOrder(Request $request)
+    {
+        $order = Order::create([
+            'user_id' => $request->user_id,
+            'status_id' => Status::where('name','empty')->first()->id,
+        ]);
+        $products = $request -> products;
+        foreach ($products as $product) {
+            $productDB = Product::find($product['product_id']);
+            if($product['quantity'] > $productDB->quantity) {
+                return response()->json(['message' => $productDB->name.' quantity isn\'t available' ], 400);
+            }
+            elseif ($product['quantity'] == $productDB->quantity) {
+                $productDB->delete();
+            }
+            else {
+                $productDB->update(['quantity' => $productDB->quantity - $product['quantity']]);
+                $productDB->save();
+            }
+            $order->products()->attach(
+                $product['product_id'],
+                [
+                'quantity' => $product['quantity'],
+                ]);
+        }
+        $total = $this->setTotal($order->id);
+        $order->update(['shipping_cost' => $total*0.02]);
+
+        return response()->json(["message" => "Order added successfully", "order" =>[
+            "id" => $order->id,
+            "user_id" => $order->user_id,
+            "status_id" => $order->status_id,
+            "total" => $total,
+            "shipping_cost" => $order->shipping_cost
+        ]]);
+    }
 
     /**
      *This function returns All of the Completed Orders of a certain user
@@ -50,5 +97,6 @@ class OrderController extends Controller
             $total += $product['price'] * $product['quantity'];
         }
         $order->update(['total' => $total]);
+        return $total;
     }
 }

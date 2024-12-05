@@ -10,7 +10,7 @@ use function Laravel\Prompts\select;
 
 class ProductController extends Controller
 {
-    /** 
+    /**
      *This function returns All the products in the app
     **/
     public function getProducts()
@@ -24,7 +24,7 @@ class ProductController extends Controller
         return response()->json($products->select('name', 'price', 'quantity', 'shop'), 200);
     }
 
-    /** 
+    /**
      *This function return the informations of a certian product
     **/
     public function getProduct(Request $request)
@@ -40,7 +40,7 @@ class ProductController extends Controller
         ], 200);
     }
 
-     /** 
+     /**
      *This function stores a new product to the app
     **/
     public function storeProduct(Request $request)
@@ -58,7 +58,7 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product stored successfully'], 200);
     }
 
-    /** 
+    /**
      *This function updates an existing product to the app
     **/
     public function updateProduct(Request $request, $id)
@@ -74,16 +74,21 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product updated successfully'], 200);
     }
 
-    /** 
+    /**
      *This function updates the quantity of a product , and if the quantity becomes 0 , it deletes the product from the app
     **/
-    public function deleteProduct($id, $number)
+    public function deleteProduct(Request $request)
     {
-        $product = Product::findOrFail($id);
-        if ($product->quantity == $number) {
+        $product = Product::findOrFail($request->id);
+        $q = $request->quantity;
+
+        if ($product->quantity == $q) {
             $product->delete();
-        } else {
-            $product->quantity = $product->quantity - $number;
+        } elseif ($product->quantity < $q) {
+            return response()->json(['message' => 'This quantity isn\'t available' ], 400);
+        }
+        else {
+            $product->quantity = $product->quantity - $q;
             $product->save();
         }
         return response()->json(['message' => 'The quantity of the product has been updated'], 200);
@@ -113,5 +118,5 @@ class ProductController extends Controller
         return response()->json($products, 200);
     }
 
-    
+
 }
