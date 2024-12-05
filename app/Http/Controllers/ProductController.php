@@ -13,7 +13,7 @@ class ProductController extends Controller
     /** 
      *This function returns All the products in the app
     **/
-    public function getProducts()
+    public function getAllProducts()
     {
         $products = Product::select('name', 'price', 'quantity', 'shop_id')->get();
         foreach ($products as $key => $product) {
@@ -27,7 +27,7 @@ class ProductController extends Controller
     /** 
      *This function return the informations of a certian product
     **/
-    public function getProduct(Request $request)
+    public function getCertainProduct(Request $request)
     {
         $product = Product::findOrFail($request->id);
         $shop = Shop::where('id', $product->shop_id)->first('name');

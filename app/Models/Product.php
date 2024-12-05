@@ -10,6 +10,8 @@ class Product extends Model
     //DONE Relationships ----------------------------------------------------------------
     protected $guarded = ['id' , 'timestamp'];
 
+    //protected $hidden = ['id' , 'timestamp'];
+
     public function shop(){
         return $this->belongsTo(Shop::class);
     }

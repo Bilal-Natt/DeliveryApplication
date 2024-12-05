@@ -28,8 +28,8 @@ Route::controller(ProductController::class)->group(function () {
 
     Route::middleware(['auth:Sanctum'])->group(function () {
 
-        Route::get('getProducts', 'getProducts');
-        Route::get('getProduct/{id}', 'getProduct');
+        Route::get('getAllProducts', 'getAllProducts');
+        Route::get('getCertainProduct/{id}', 'getCertainProduct');
         Route::post('storeProduct', 'storeProduct');
         Route::put('updateProduct/{id}', 'updateProduct');
         Route::delete('deleteProduct/{id}', 'deleteProduct');
@@ -41,7 +41,7 @@ Route::controller(ShopController::class)->group(function () {
 
     Route::middleware(['auth:Sanctum'])->group(function () {
 
-        Route::get('getShopProducts/{id}', 'getShopProducts2');
+        Route::get('getShopProducts/{id}', 'getShopProducts');
         Route::get('shop/products/search', 'searchShopProducts');
         Route::get('shops/search', 'searchShop');
     });
@@ -50,13 +50,11 @@ Route::controller(ShopController::class)->group(function () {
 Route::controller(OrderController::class)->group(function () {
 
     Route::get('getPurchasedOrders', 'getPurchasedOrders');
-    Route::get('getOrderProducts', 'getOrderProducts');
+    Route::get('getOrderProducts/{id}', 'getOrderProducts');
+    Route::delete('deleteOrders',  'deleteOrders');
+    Route::put('updateOrder',  'updateOrder');
+
+
 });
 
-
-Route::middleware(['auth:Sanctum'])->group(function () {
-
-    Route::get('getPurchasedOrders',  'getPurchasedOrders');
-    Route::get('getOrderProducts/{id}',  'getOrderProducts');
-});
 
