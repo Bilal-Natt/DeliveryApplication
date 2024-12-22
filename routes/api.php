@@ -33,8 +33,9 @@ Route::controller(ProductController::class)->group(function () {
         Route::post('storeProduct', 'storeProduct');
         Route::put('updateProduct/{id}', 'updateProduct');
         Route::delete('deleteProduct', 'deleteProduct');
+        Route::get('products/search', 'searchProduct');
     });
-    Route::get('products/search', 'searchProduct');
+
 });
 
 Route::controller(ShopController::class)->group(function () {
@@ -48,14 +49,15 @@ Route::controller(ShopController::class)->group(function () {
 });
 
 Route::controller(OrderController::class)->group(function () {
-    Route::get('getPurchasedOrders',  'getPurchasedOrders');
-    Route::get('getOrderProducts',  'getOrderProducts');
-    Route::post('order/store','storeOrder');
-    Route::delete('deleteOrders' , 'deleteOrders');
-    Route::put('updateOrder' , 'updateOrder');
+
     Route::middleware(['auth:Sanctum'])->group(function () {
 
-        
+        Route::get('getPurchasedOrders',  'getPurchasedOrders');
+        Route::get('getOrderProducts',  'getOrderProducts');
+        Route::post('order/store','storeOrder');
+        Route::delete('deleteOrders' , 'deleteOrders');
+        Route::put('updateOrder' , 'updateOrder');
+
     });
 
 });
