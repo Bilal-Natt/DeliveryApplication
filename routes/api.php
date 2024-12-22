@@ -17,10 +17,11 @@ Route::controller(UserController::class)->group(function () {
     Route::middleware(['auth:Sanctum'])->group(function () {
 
         Route::post('logout', 'logout');
+        Route::put('updateUser', 'updateUser');
+
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
-    Route::put('updateUser', 'updateUser');
 });
 
 
