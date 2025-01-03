@@ -32,8 +32,13 @@ return [
     | token that's present on an incoming request for authentication.
     |
     */
-
-    'guard' => ['web'],
+    'guards' => [
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+        // ...
+    ],
 
     /*
     |--------------------------------------------------------------------------

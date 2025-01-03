@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:Sanctum');
+})->middleware('auth:sanctum');
 
 
 Route::controller(UserController::class)->group(function () {
 
-    Route::middleware(['auth:Sanctum'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::post('logout', 'logout');
         Route::put('updateUser', 'updateUser');
@@ -27,7 +27,7 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(ProductController::class)->group(function () {
 
-    Route::middleware(['auth:Sanctum'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::get('products/getAllProducts', 'getAllProducts');
         Route::get('product/getCertainProduct/{id}', 'getCertainProduct');
@@ -41,7 +41,7 @@ Route::controller(ProductController::class)->group(function () {
 
 Route::controller(ShopController::class)->group(function () {
 
-    Route::middleware(['auth:Sanctum'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::get('shop/getShopProducts/{id}', 'getShopProducts');
         Route::get('shop/products/search', 'searchShopProducts');
@@ -51,13 +51,13 @@ Route::controller(ShopController::class)->group(function () {
 
 Route::controller(OrderController::class)->group(function () {
 
-    Route::middleware(['auth:Sanctum'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
 
-        Route::get('orders/getPurchasedOrders',  'getPurchasedOrders');
-        Route::get('order/getOrderProducts',  'getOrderProducts');
-        Route::post('order/store','storeOrder');
-        Route::delete('order/deleteOrders' , 'deleteOrders');
-        Route::put('order/updateOrder' , 'updateOrder');
+        Route::get('orders/getPurchasedOrders', 'getPurchasedOrders');
+        Route::get('order/getOrderProducts', 'getOrderProducts');
+        Route::post('order/store', 'storeOrder');
+        Route::delete('order/deleteOrders', 'deleteOrders');
+        Route::put('order/updateOrder', 'updateOrder');
 
     });
 
