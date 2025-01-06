@@ -18,6 +18,8 @@ Route::controller(UserController::class)->group(function () {
 
         Route::post('logout', 'logout');
         Route::put('updateUser', 'updateUser');
+        Route::post('uploadImage', 'uploadImage',);
+        Route::get('getImage', 'getImage');
 
     });
     Route::post('register', 'register');

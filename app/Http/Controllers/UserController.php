@@ -92,7 +92,19 @@ class UserController extends Controller
             "message" => "Logged out successfully",
         ], 200);
     }
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+        ]);
+        $imageName = time() . '_'.auth()->user()->phone. '.' . request()->image->getClientOriginalExtension();
+        request()->image->move(base_path('storage/app/public/images'), $imageName);
+        return response()->json([
+            "message" => "Image uploaded successfully",
+            "image" => $imageName
+        ]);
 
+    }
     /**
      * this  function is to update the user profile
      */
@@ -113,12 +125,21 @@ class UserController extends Controller
                 'regex:/[@$!%*?&]/'
             ],
             'address' => 'sometimes|url|max:255',
-            'image_path' => 'sometimes|string|max:255'
         ]);
-
         $user->update($validatedData);
+
+        $user->image_path = public_path('images').'/'.$request->imageName;
+        $user->save();
+
+
         return response()->json(['message' => 'the info has been updated'], 200);
     }
-
+    public function getImage(Request $request)
+    {
+        $user = auth()->user();
+        return response()->json([
+            "image" => $user->image_path
+        ]);
+    }
 
 }
