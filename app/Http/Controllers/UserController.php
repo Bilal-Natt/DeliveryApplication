@@ -44,7 +44,6 @@ class UserController extends Controller
             'last_name' => $request->last_name,
             'phone' => $phone,
             'password' => Hash::make($request->password),
-            'role_id' => 2, // Default role: User
         ]);
         return response()->json(
             [
@@ -63,6 +62,7 @@ class UserController extends Controller
                 'regex:/^(?:\+9639\d{8}|09\d{8})$/',
             ],
             'password' => 'required|string',
+            'role' => 'required'
         ]);
 
         $phone = $this->formatPhone($request->phone);
