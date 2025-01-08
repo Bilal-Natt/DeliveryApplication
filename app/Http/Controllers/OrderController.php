@@ -61,11 +61,12 @@ class OrderController extends Controller
      *This function returns All of the Completed Orders of a certain user
      * The request body must include the following parameters:
      ** $user_id : the id of the user requesting his purchased orders
-     **  الطلب الرابع في الطلبات الأساسية  
+     **  الطلب الرابع في الطلبات الأساسية
      **/
-    public function getPurchasedOrders(Request $request)
+    public function getdOrders(Request $request)
     {
-        $orders = Order::where('user_id', $request->user_id)->where('status_id', 1)->select('id', 'total', 'shipping_cost')->get();
+        $orders = Order::where('user_id"
+        ', $request->user_id)->select('id', 'total', 'shipping_cost')->get();
         return response()->json($orders, 200);
     }
 
@@ -73,7 +74,7 @@ class OrderController extends Controller
      *This function returns All the Products of certain Order
      * The request body must include the following parameters:
      ** $orderID : the ID of the order to get his products
-     ** تكملة الطلب الرابع في الطلبات الأساسية  
+     ** تكملة الطلب الرابع في الطلبات الأساسية
      **/
     public function getOrderProducts(Request $request)
     {
@@ -93,7 +94,7 @@ class OrderController extends Controller
      * this function is to delete (cancel) an order and return all products quantities to the original products
      * The request body must include the following parameters:
      ** $orderID : the ID of the order to delete it
-     **   الطلب الخامس في الطلبات الأساسية 
+     **   الطلب الخامس في الطلبات الأساسية
      */
     public function deleteOrders(Request $request)
     {
@@ -114,11 +115,11 @@ class OrderController extends Controller
      *witch
      ** $orderID : The ID of the order that its products being updated
      ** $productID : The ID of the product being updated/added
-     ** $quantity : The quantity of the product 
+     ** $quantity : The quantity of the product
      ** $op : the operation to be performed takes only two values (update OR add) : update (to update the quantity) OR add (to add a new product)
      * كل المتغيرات السابقة لازمة لتحديد أي من العملبتبن سوف تتنفذ
      ** $state : this param is for the update operation , it is a int param 0 is to decress the quantity (delete a product or sub its quantity) and 1 is to add incress the quantity of an existing product
-     * الخاصة بتعديل كمية منتج موجود مسبقا update هذا المتغير خاص فقط بعملية ال 
+     * الخاصة بتعديل كمية منتج موجود مسبقا update هذا المتغير خاص فقط بعملية ال
      ** تكملة الطلب الخامس في الطلبات الأساسية
      */
     public function updateOrder(Request $request)
@@ -131,17 +132,17 @@ class OrderController extends Controller
             $response = $this->updateProductInOrder($product, $request->quantity, $request->state);
             $status = $response->getStatusCode();
             $response = $response->getData()->data;
-            
+
         } elseif ($request->op === 'add') {
             $product = Product::findOrFail($request->productID);
             if ($product->quantity - $request->quantity <= 0) {
                 $response =  "the remaining quantity is less than $request->quantity";
                 $status = 400;
-            } 
+            }
             else{
             $order = Order::findOrFail($request->orderID);
             $order->products()->attach(
-                $request->productID, 
+                $request->productID,
                 [
                 'quantity' => $request->quantity
                 ]
@@ -171,7 +172,7 @@ class OrderController extends Controller
     }
 
     /**
-     * this function is to deletes product quantity from an order and returns its quantity to the original products quantity 
+     * this function is to deletes product quantity from an order and returns its quantity to the original products quantity
      ** $product : the object of type product to delete its quantity from the order
      * */
     private function deleteProductFromOrder($product)
@@ -180,7 +181,7 @@ class OrderController extends Controller
         $orignalProduct->update (['quantity' => $orignalProduct->quantity += $product->pivot->quantity]);
     }
 
-    /** 
+    /**
      * this function updates a product in an order by incressing/decressing quantity or deletes the product from the order
      */
     private function updateProductInOrder($product, $quantity, $op)
@@ -206,7 +207,6 @@ class OrderController extends Controller
             $orignalProduct->update(['quantity' => $orignalProduct->quantity  -= $quantity]) ;
             $product->pivot->update (['quantity' => $product->pivot->quantity  += $quantity]);
         }
-        //return 'idf';
         return response()->json(['data'=>'Process accomplished successfully'] , 200);
 
 

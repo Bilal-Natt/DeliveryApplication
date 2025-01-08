@@ -55,7 +55,7 @@ Route::controller(OrderController::class)->group(function () {
 
     Route::middleware(['auth:sanctum'])->group(function () {
 
-        Route::get('orders/getPurchasedOrders', 'getPurchasedOrders');
+        Route::get('orders/getOrders', 'getOrders');
         Route::get('order/getOrderProducts', 'getOrderProducts');
         Route::post('order/store', 'storeOrder');
         Route::delete('order/deleteOrders', 'deleteOrders');

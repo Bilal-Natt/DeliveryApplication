@@ -14,11 +14,11 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         $statuses =[
-            'Completed',
+            'In Queue',
             'Preparing',
+            'Completed',
             'Delivered',
             'Canceled',
-            'In Queue'
         ];
         foreach ($statuses as $status){
             Status::create(['name'=>$status]);

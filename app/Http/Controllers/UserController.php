@@ -117,11 +117,11 @@ class UserController extends Controller
             'password' => [
                 'sometimes',
                 'string',
-                'min:8', // Minimum password length
-                'confirmed', // Password confirmation
-                'regex:/[a-z]/', // At least one lowercase letter
-                'regex:/[A-Z]/', // At least one uppercase letter
-                'regex:/[0-9]/', // At least one numeric digit
+                'min:8',
+                'confirmed',
+                'regex:/[a-z]/', 
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
                 'regex:/[@$!%*?&]/'
             ],
             'address' => 'sometimes|url|max:255',
