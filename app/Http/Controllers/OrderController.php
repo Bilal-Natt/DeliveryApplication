@@ -25,7 +25,7 @@ class OrderController extends Controller
     {
         $order = Order::create([
             'user_id' => $request->user_id,
-            'status_id' => Status::where('name','empty')->first()->id,
+            'status_id' => Status::where('name','In Queue')->first()->id,
         ]);
         $products = $request -> products;
         foreach ($products as $product) {
@@ -78,7 +78,7 @@ class OrderController extends Controller
      **/
     public function getOrderProducts(Request $request)
     {
-        $products = Order::findOrFail($request->orderID)->products->map(function ($product) {
+        $products = Order::findOrFail($request->order_id)->products->map(function ($product) {
             return [
                 'name' => $product->name,
                 'price' => $product->price,

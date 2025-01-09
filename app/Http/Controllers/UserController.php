@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\Shop;
 use App\Models\User;
 //use Hash;
 use Illuminate\Http\Request;
@@ -44,6 +46,7 @@ class UserController extends Controller
             'last_name' => $request->last_name,
             'phone' => $phone,
             'password' => Hash::make($request->password),
+            'role_id' => 2,
         ]);
         return response()->json(
             [
@@ -62,7 +65,6 @@ class UserController extends Controller
                 'regex:/^(?:\+9639\d{8}|09\d{8})$/',
             ],
             'password' => 'required|string',
-            'role' => 'required'
         ]);
 
         $phone = $this->formatPhone($request->phone);
@@ -82,6 +84,18 @@ class UserController extends Controller
             "token" => $token,
             "user" => $user
         ], 200);
+    }
+
+    public function verify(Request $request)
+    {
+        if($request->code == 192834){
+            return response()->json([
+                "message" => "Verified",
+            ]);
+        }
+        return response()->json([
+            "message" => "Invalid code , Try again!"
+        ]);
     }
 
     public function logout(Request $request)
@@ -119,7 +133,7 @@ class UserController extends Controller
                 'string',
                 'min:8',
                 'confirmed',
-                'regex:/[a-z]/', 
+                'regex:/[a-z]/',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
                 'regex:/[@$!%*?&]/'
@@ -140,6 +154,18 @@ class UserController extends Controller
         return response()->json([
             "image" => $user->image_path
         ]);
+    }
+
+    public function getFavoritesProducts(Request $request)
+    {
+        $products = User::findOrFail($request->user_id)->products->map(function ($product) {
+            return [
+                'name' => $product->name,
+                'price' => $product->price,
+                'shop' => Shop::where('id', $product->shop_id)->pluck('name')->first()
+            ];
+        });
+        return response()->json($products);
     }
 
 }

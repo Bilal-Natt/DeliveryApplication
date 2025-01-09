@@ -20,8 +20,10 @@ Route::controller(UserController::class)->group(function () {
         Route::put('updateUser', 'updateUser');
         Route::post('uploadImage', 'uploadImage',);
         Route::get('getImage', 'getImage');
+        Route::get('getFavorites', 'getFavoritesProducts');
 
     });
+    Route::post('verify','verify');
     Route::post('register', 'register');
     Route::post('login', 'login');
 });
@@ -37,6 +39,8 @@ Route::controller(ProductController::class)->group(function () {
         Route::put('product/updateProduct/{id}', 'updateProduct');
         Route::delete('product/deleteProduct', 'deleteProduct');
         Route::get('products/search', 'searchProduct');
+        Route::post('product/addToFavorite', 'addToFavorite');
+        Route::post('product/cancelFromFavorites', 'cancelFromFavorites');
     });
 
 });

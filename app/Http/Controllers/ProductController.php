@@ -118,5 +118,25 @@ class ProductController extends Controller
         return response()->json($products, 200);
     }
 
+    public function addToFavorite(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
+        $product->users()->attach(
+            $request->user_id
+        );
+        return response()->json([
+            "message" => "Product added to favorite successfully"
+        ]);
+    }
 
+    public function cancelFromFavorites(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
+        $product->users()->detach(
+            $request->user_id
+        );
+        return response()->json([
+            "message" => "Product canceled from favorites successfully"
+        ]);
+    }
 }
