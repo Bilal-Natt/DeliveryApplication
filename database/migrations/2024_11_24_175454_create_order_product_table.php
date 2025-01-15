@@ -19,6 +19,7 @@ return new class extends Migration
                 'product_id',
             ]);
             $table->integer('quantity');
+            $table->float('price');
             $table->timestamps();
         });
     }

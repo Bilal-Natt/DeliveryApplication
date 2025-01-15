@@ -13,15 +13,22 @@ class ProductController extends Controller
     /**
      *This function returns All the products in the app
     **/
-    public function getAllProducts()
+    public function getAllProducts(Request $request)
     {
-        $products = Product::select('name', 'price', 'quantity', 'shop_id')->get();
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
+        $products = Product::select('ar_name','en_name','price','quantity', 'shop_id')->get();
         foreach ($products as $key => $product) {
-            $shop = Shop::where('id', $product->shop_id)->first('name');
-            $product->shop = $shop->name;
+            $shop = Shop::where('id', $product->shop_id)->first();
+            $name = [];
+            $name["ar"] = $shop->ar_name;
+            $name["en"] = $shop->en_name;
+            $product->shop = $name[$lang];
             $products[$key] = $product;
         }
-        return response()->json($products->select('name', 'price', 'quantity', 'shop'), 200);
+        return response()->json($products->select('ar_name','en_name','price', 'quantity','shop'), 200);
     }
 
     /**
@@ -29,11 +36,19 @@ class ProductController extends Controller
     **/
     public function getCertainProduct(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $product = Product::findOrFail($request->id);
-        $shop = Shop::where('id', $product->shop_id)->first('name');
-        $product->shop = $shop->name;
+        $shop = Shop::where('id', $product->shop_id)->first();
+        $name = [];
+        $name["ar"] = $shop->ar_name;
+        $name["en"] = $shop->en_name;
+        $product->shop = $name[$lang];
         return response()->json([
-            'name' => $product->name,
+            'ar_name' => $product->ar_name,
+            'en_name' =>$product->en_name,
             'price' => $product->price,
             'quantity' => $product->quantity,
             'shop' => $product->shop,
@@ -45,9 +60,14 @@ class ProductController extends Controller
     **/
     public function storeProduct(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $validatedData = $request->validate(
             [
-                'name' => 'required|string',
+                'en_name' => 'required|string',
+                'ar_name' => 'required|string',
                 'price' => 'required',
                 'quantity' => 'required',
                 'shop_id' => 'required',
@@ -55,7 +75,10 @@ class ProductController extends Controller
         );
 
         $product = Product::create($validatedData);
-        return response()->json(['message' => 'Product stored successfully'], 200);
+        $message = [];
+        $message["ar"]="تم حفظ المنتج بنجاح";
+        $message["en"]='Product stored successfully';
+        return response()->json(['message' => $message[$lang]], 200);
     }
 
     /**
@@ -63,15 +86,23 @@ class ProductController extends Controller
     **/
     public function updateProduct(Request $request, $id)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $validatedData = $request->validate([
-            'name' => 'required|string',
+            'en_name' => 'required|string',
+            'ar_name' => 'required|string',
             'price' => 'sometimes',
             'quantity' => 'sometimes',
             'shop_id' => 'required',
         ]);
         $product = Product::findOrFail($id);
         $product->update($validatedData);
-        return response()->json(['message' => 'Product updated successfully'], 200);
+        $message = [];
+        $message["ar"]="تم تعديل المنتج بنجاح";
+        $message["en"]='Product updated successfully';
+        return response()->json(['message' => $message[$lang]], 200);
     }
 
     /**
@@ -79,18 +110,27 @@ class ProductController extends Controller
     **/
     public function deleteProduct(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $product = Product::findOrFail($request->id);
         $q = $request->quantity;
 
         if ($product->quantity == $q) {
             $product->delete();
         } elseif ($product->quantity < $q) {
-            return response()->json(['message' => 'This quantity isn\'t available' ], 400);
+            $message = [];
+            $message["ar"] = 'هذه الكمية غير متاحة';
+            $message["en"] = 'This quantity isn\'t available';
+            $message = $message[$lang];
+            return response()->json(['message' => $message ], 400);
         }
         else {
             $product->quantity = $product->quantity - $q;
             $product->save();
         }
+
         return response()->json(['message' => 'The quantity of the product has been updated'], 200);
     }
 
@@ -102,13 +142,19 @@ class ProductController extends Controller
 
     public function searchProduct(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $products = Product::with('shop')
-            ->where('name', 'LIKE', $request->text . '%')
-            ->select('name','price','quantity','shop_id')
+            ->where('ar_name', 'LIKE', $request->text . '%')
+            ->orWhere('en_name','LIKE',$request->text . '%')
+            ->select('ar_name', 'en_name', 'price', 'quantity', 'shop_id')
             ->get()
             ->map(function ($product) {
                 return [
-                    'name' => $product->name,
+                    'ar_name' => $product->ar_name,
+                    'en_name' => $product->en_name,
                     'price' => $product->price,
                     'quantity' => $product->quantity,
                     'shop' => $product->shop->name
@@ -120,23 +166,44 @@ class ProductController extends Controller
 
     public function addToFavorite(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $product = Product::findOrFail($request->product_id);
         $product->users()->attach(
             $request->user_id
         );
+        $message = [];
+        $message["ar"] = 'تمت إضافة المنتج إلى المفضلة';
+        $message["en"] = 'Product added to favorite successfully';
         return response()->json([
-            "message" => "Product added to favorite successfully"
+            "message" => $message[$lang]
         ]);
     }
 
     public function cancelFromFavorites(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $product = Product::findOrFail($request->product_id);
         $product->users()->detach(
             $request->user_id
         );
+        $message = [];
+        $message["ar"] = 'تم حذف المنتج من المفضلة';
+        $message["en"] = 'Product canceled from favorites successfully';
         return response()->json([
-            "message" => "Product canceled from favorites successfully"
+            "message" => $message[$lang]
+        ]);
+    }
+    public function getImage($id)
+    {
+        $product = Product::findOrFail($id);
+        return response()->json([
+            "image" => $product->image_path
         ]);
     }
 }

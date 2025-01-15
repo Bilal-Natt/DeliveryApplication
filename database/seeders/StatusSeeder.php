@@ -14,14 +14,32 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         $statuses =[
-            'In Queue',
-            'Preparing',
-            'Completed',
-            'Delivered',
-            'Canceled',
+            [
+                'en'=>'In Queue',
+                'ar'=>'قيد الانتظار'
+            ],
+            [
+                'ar'=>'Preparing',
+                'en'=>'يتم التحضير'
+            ],
+            [
+                'en'=>'Completed',
+                'ar'=>'مكتمل'
+            ],
+            [
+                'en'=>'Delivered',
+                'ar'=>'تم التوصيل'
+            ],
+            [
+                'en'=>'Canceled',
+                'ar'=>'تم إلغاؤه'
+            ],
         ];
         foreach ($statuses as $status){
-            Status::create(['name'=>$status]);
+            Status::create([
+                'ar_name'=>$status['ar'],
+                'en_name'=>$status['en']
+            ]);
         }
     }
 

@@ -23,15 +23,33 @@ class OrderController extends Controller
      */
     public function storeOrder(Request $request)
     {
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'status_id' => Status::where('name','In Queue')->first()->id,
-        ]);
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
+        $order = null;
+        if($lang == "ar") {
+            $order = Order::create([
+                'user_id' => $request->user_id,
+                'status_id' => Status::where('ar_name', 'قيد الانتظار')->first()->id,
+            ]);
+        }
+        else{
+            $order = Order::create([
+                'user_id' => $request->user_id,
+                'status_id' => Status::where('en_name', 'In Queue')->first()->id,
+            ]);
+        }
         $products = $request -> products;
         foreach ($products as $product) {
             $productDB = Product::find($product['product_id']);
+            $message = [];
+            $message["ar"] = 'الكمية غير متاحة';
+            $message["en"] = 'quantity isn\'t available';
+            $message = $message[$lang];
+//            $name = $name[$lang];
             if($product['quantity'] > $productDB->quantity) {
-                return response()->json(['message' => $productDB->name.' quantity isn\'t available' ], 400);
+                return response()->json(['message' => $message], 400);
             }
             elseif ($product['quantity'] == $productDB->quantity) {
                 $productDB->delete();
@@ -43,12 +61,17 @@ class OrderController extends Controller
             $order->products()->attach(
                 $product['product_id'],
                 [
-                'quantity' => $product['quantity'],
+                    'quantity' => $product['quantity'],
+                    'price' => $productDB->price,
                 ]);
         }
         $total = $this->setTotal($order->id);
+        $message = [];
+        $message["ar"] = 'تمت إضافة الطلب بنجاح';
+        $message["en"] = 'Order added successfully';
+        $message = $message[$lang];
 
-        return response()->json(["message" => "Order added successfully", "order" =>[
+        return response()->json(["message" => $message, "order" =>[
             "id" => $order->id,
             "user_id" => $order->user_id,
             "status_id" => $order->status_id,
@@ -63,10 +86,11 @@ class OrderController extends Controller
      ** $user_id : the id of the user requesting his purchased orders
      **  الطلب الرابع في الطلبات الأساسية
      **/
-    public function getdOrders(Request $request)
+    public function getOrders(Request $request)
     {
-        $orders = Order::where('user_id"
-        ', $request->user_id)->select('id', 'total', 'shipping_cost')->get();
+        $orders = Order::where('user_id', $request->user_id)->get();
+        $orders = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
+            ->select('orders.id','orders.total','orders.shipping_cost', 'statuses.ar_name as ar_status','statuses.en_name as en_status')->get();
         return response()->json($orders, 200);
     }
 
@@ -80,10 +104,12 @@ class OrderController extends Controller
     {
         $products = Order::findOrFail($request->order_id)->products->map(function ($product) {
             return [
-                'name' => $product->name,
-                'price' => $product->price,
+                'en_name' => $product->en_name,
+                'ar_name' => $product->ar_name,
+                'price' => $product->pivot->price,
                 'quantity' => $product->pivot->quantity,
-                'shop' => Shop::where('id', $product->shop_id)->pluck('name')->first()
+                'ar_shop' => Shop::where('id', $product->shop_id)->pluck('ar_name')->first(),
+                'en_shop' => Shop::where('id', $product->shop_id)->pluck('en_name')->first()
             ];
         });
 
@@ -98,6 +124,10 @@ class OrderController extends Controller
      */
     public function deleteOrders(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $orders = Order::findMany($request->orderID);
         foreach ($orders as $order) {
             $orderProducts = Order::findOrFail($order->id)->products;
@@ -106,7 +136,11 @@ class OrderController extends Controller
             }
             $order->delete();
         }
-        return response()->json(['message' => 'The orders has been deleted successfully'] , 200);
+        $message = [];
+        $message["ar"] = 'تم حذف الطلب بنجاح';
+        $message["en"] = 'The orders has been deleted successfully';
+        $message = $message[$lang];
+        return response()->json(['message' => $message] , 200);
     }
 
     /**
@@ -124,19 +158,31 @@ class OrderController extends Controller
      */
     public function updateOrder(Request $request)
     {
-        $response = 'Process accomplished successfully';
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
+        $message = [];
+        $message["ar"] = 'تمت العملية بنجاح';
+        $message["en"] = 'Process accomplished successfully';
+        $response = $message[$lang];
         $status = 200;
         if ($request->op === 'update') {
             $product = Order::findOrFail($request->orderID)->products->where('id', $request->productID)->first();
 
-            $response = $this->updateProductInOrder($product, $request->quantity, $request->state);
+            $response = $this->updateProductInOrder($product, $request->quantity, $request->state,$lang);
             $status = $response->getStatusCode();
             $response = $response->getData()->data;
+
 
         } elseif ($request->op === 'add') {
             $product = Product::findOrFail($request->productID);
             if ($product->quantity - $request->quantity <= 0) {
-                $response =  "the remaining quantity is less than $request->quantity";
+                $message = [];
+                $message["ar"] = 'الكمية المتبقية أقل من';
+                $message["en"] = 'the remaining quantity is less than';
+                $message = $message[$lang];
+                $response = "$message $request->quantity";
                 $status = 400;
             }
             else{
@@ -164,10 +210,12 @@ class OrderController extends Controller
         $total = 0;
         $products = Order::findOrFail($orderID)->products;
         foreach ($products as $product) {
-            $total += $product->price * $product->pivot->quantity;
+            $total += $product->pivot->price * $product->pivot->quantity;
         }
-        $order->update(['total' => $total]);
-        $order->update(['shipping_cost' => $total*0.02]);
+        $order->update([
+            'total' => $total,
+            'shipping_cost' => $total*0.02
+            ]);
         return $total;
     }
 
@@ -184,9 +232,8 @@ class OrderController extends Controller
     /**
      * this function updates a product in an order by incressing/decressing quantity or deletes the product from the order
      */
-    private function updateProductInOrder($product, $quantity, $op)
+    private function updateProductInOrder($product, $quantity, $op,$lang)
     {
-
         if ($product->pivot->quantity < $quantity && $op == 0) {
             return  response()->json(['data'=>'invalid opration'] , 400);
         }
@@ -194,7 +241,6 @@ class OrderController extends Controller
             $this->deleteProductFromOrder($product);
             $product->pivot->delete();
         } else if ($product->pivot->quantity  > $quantity && $op == 0) {
-            //return 'dhafh';
             $product->pivot->update(['quantity' => $product->pivot->quantity -= $quantity]);
 
             $orignalProduct = Product::findOrFail($product->id);
@@ -202,13 +248,18 @@ class OrderController extends Controller
         } elseif ($op == 1) {
             $orignalProduct = Product::findOrFail($product->id);
             if ($orignalProduct->quantity - $quantity < 0 ) {
+                $message["ar"] = 'الكمية المتبقية أقل من';
+                $message["en"] = 'the remaining quantity is less than';
+                $message = $message[$lang];
                 return response()->json(['data'=>"the remaining quantity is less than $quantity"] , 400);
             }
             $orignalProduct->update(['quantity' => $orignalProduct->quantity  -= $quantity]) ;
             $product->pivot->update (['quantity' => $product->pivot->quantity  += $quantity]);
         }
-        return response()->json(['data'=>'Process accomplished successfully'] , 200);
-
-
+        $message = [];
+        $message["ar"] = 'تمت العملية بنجاح';
+        $message["en"] = 'Process accomplished successfully';
+        $message = $message[$lang];
+        return response()->json(['data'=> $message] , 200);
     }
 }

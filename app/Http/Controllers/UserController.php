@@ -20,6 +20,10 @@ class UserController extends Controller
     }
     public function register(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+           "message" => "Send The Language Pleas"
+        ],400);}
         $request->validate([
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
@@ -48,9 +52,13 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'role_id' => 2,
         ]);
+        $message = [];
+        $message["ar"] = 'تمت تسجيل المستخدم بنجاح';
+        $message["en"] = 'User created successfully';
         return response()->json(
+
             [
-                "message" => "User registered successfully",
+                "message" => $message[$lang],
                 "user" => $user
             ],
             201
@@ -59,6 +67,10 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $request->validate([
             'phone' => [
                 'required',
@@ -72,15 +84,20 @@ class UserController extends Controller
         $user = User::where('phone', $phone)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
+            $message = [];
+            $message["ar"] = 'كلمة المرور أو الرقم غير صحيحة';
+            $message["en"] = 'Invalid phone or password';
             return response()->json([
-                "message" => "Invalid phone or password",
+                "message" => $message[$lang],
             ], 401);
         }
 
         $token = $user->createToken('authToken')->plainTextToken;
-
+        $message = [];
+        $message["ar"] = 'تمت تسجيل الدخول بنجاح';
+        $message["en"] = 'Login successfully';
         return response()->json([
-            "message" => "Login successful",
+            "message" => $message[$lang],
             "token" => $token,
             "user" => $user
         ], 200);
@@ -88,22 +105,39 @@ class UserController extends Controller
 
     public function verify(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         if($request->code == 192834){
+            $message = [];
+            $message["ar"] = 'تم التحقق بنجاح';
+            $message["en"] = 'Verifying Successfully';
             return response()->json([
-                "message" => "Verified",
-            ]);
+                "message" => $message[$lang],
+            ],200);
         }
+
+        $message = [];
+        $message["ar"] = 'الرمز غير صالح , حاول مجدداً!';
+        $message["en"] = 'Invalid code , Try again!';
         return response()->json([
-            "message" => "Invalid code , Try again!"
-        ]);
+            "message" => $message[$lang]
+        ],400);
     }
 
     public function logout(Request $request)
     {
         // $user = $request->user();
+        $lang=$request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $request->user()->currentAccessToken()->delete();
+        $message["ar"] = 'تمت تسجيل الخروج بنجاح';
+        $message["en"] = 'Logged out successfully';
         return response()->json([
-            "message" => "Logged out successfully",
+            "message" => $message[$lang],
         ], 200);
     }
     public function uploadImage(Request $request)
@@ -124,6 +158,10 @@ class UserController extends Controller
      */
     public function updateUser(Request $request)
     {
+        $lang = $request->lang;
+        if($lang == null) {return response()->json([
+            "message" => "Send The Language Pleas"
+        ],400);}
         $user = User::findOrFail($request->id);
         $validatedData = $request->validate([
             'first_name' => 'sometimes|string|max:255',
@@ -144,9 +182,10 @@ class UserController extends Controller
 
         $user->image_path = public_path('images').'/'.$request->imageName;
         $user->save();
-
-
-        return response()->json(['message' => 'the info has been updated'], 200);
+        $message = [];
+        $message["ar"] = 'تم تعديل البيانات بنجاح';
+        $message["en"] = 'the info has been updated successfully';
+        return response()->json(['message' => $message[$lang] ], 200);
     }
     public function getImage(Request $request)
     {

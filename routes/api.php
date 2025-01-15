@@ -41,6 +41,7 @@ Route::controller(ProductController::class)->group(function () {
         Route::get('products/search', 'searchProduct');
         Route::post('product/addToFavorite', 'addToFavorite');
         Route::post('product/cancelFromFavorites', 'cancelFromFavorites');
+        Route::get('product/getImage/{id}', 'getImage');
     });
 
 });
@@ -49,9 +50,12 @@ Route::controller(ShopController::class)->group(function () {
 
     Route::middleware(['auth:sanctum'])->group(function () {
 
+        Route::get('shops/all','getAllShops');
         Route::get('shop/getShopProducts/{id}', 'getShopProducts');
         Route::get('shop/products/search', 'searchShopProducts');
         Route::get('shops/search', 'searchShop');
+        Route::get('shop/getImage/{id}', 'getImage');
+
     });
 });
 
